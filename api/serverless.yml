@@ -33,6 +33,17 @@ provider:
         - dynamodb:DescribeTable
       Resource: "arn:aws:dynamodb:us-east-2:*:*"
 
+  cors:
+    origin: '*'
+    headers:
+      - Content-Type
+      - X-Amz-Date
+      - Authorization
+      - X-Api-Key
+      - X-Amz-Security-Token
+      - X-Amz-User-Agent
+    allowCredentials: false
+
 functions:
   registerMinions:
     handler: service.registerMinions
@@ -40,6 +51,8 @@ functions:
       - http:
           path: createMinions
           method: post
+          cors: true
+          authorizer: aws_iam
 
   getMinion:  
     handler: service.getMinion
@@ -47,9 +60,17 @@ functions:
       - http:
           path: minions/{id}
           method: get
+          cors: true
+          authorizer: aws_iam
+
   getMinions:
     handler: service.getMinions
     events:
       - http:
           path: minions
           method: get
+          cors: true
+          authorizer: aws_iam
+
+resources:
+  - ${file(resources/api-gateway-errors.yml)}
