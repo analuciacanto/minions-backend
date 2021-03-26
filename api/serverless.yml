@@ -34,7 +34,7 @@ provider:
       Resource: "arn:aws:dynamodb:us-east-2:*:*"
 
   cors:
-    origin: '*'
+    origin: "*"
     headers:
       - Content-Type
       - X-Amz-Date
@@ -52,16 +52,28 @@ functions:
           path: createMinions
           method: post
           cors: true
-          authorizer: aws_iam
 
-  getMinion:  
+  createPurchase:
+    handler: service.createPurchase
+    events:
+      - http:
+          path: createPurchase
+          method: post
+          cors: true
+  sendMail:
+    handler: service.sendMailPurchase
+    events:
+      - http:
+          path: sendMail
+          method: post
+          cors: true
+  getMinion:
     handler: service.getMinion
     events:
       - http:
           path: minions/{id}
           method: get
           cors: true
-          authorizer: aws_iam
 
   getMinions:
     handler: service.getMinions
@@ -70,7 +82,6 @@ functions:
           path: minions
           method: get
           cors: true
-          authorizer: aws_iam
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}
