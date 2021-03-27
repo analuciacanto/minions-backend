@@ -67,13 +67,6 @@ functions:
           path: sendMail
           method: post
           cors: true
-  getMinion:
-    handler: service.getMinion
-    events:
-      - http:
-          path: minions/{id}
-          method: get
-          cors: true
 
   getMinions:
     handler: service.getMinions

@@ -2,7 +2,10 @@ import * as uuid from "uuid";
 import handler from "./libs/handler-lib";
 import dynamoDb from "./libs/dynamodb-lib";
 const nodemailer = require("nodemailer");
-var express = require("express");
+
+//E-mail
+const USER = "mundo.dos.minions@mundodosminions.com";
+const PASS = "minions_123";
 
 //POST
 export const registerMinions = handler(async (event) => {
@@ -43,26 +46,17 @@ export const createPurchase = handler(async (event) => {
 });
 
 export const sendMailPurchase = handler(async () => {
-  return "sucesso";
+  const request = transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email enviado: " + info.response);
+    }
+  });
+  return request;
 });
 
 //GET
-
-export const getMinion = handler(async (event) => {
-  const params = {
-    TableName: "minions",
-    Key: {
-      minionid: event.pathParameters.id, // The id of the note from the path
-    },
-  };
-
-  const result = await dynamoDb.get(params);
-  if (!result.Item) {
-    throw new Error("Item not found.");
-  }
-  return result.Item;
-});
-
 export const getMinions = handler(async () => {
   const params = {
     TableName: "minions",
@@ -71,7 +65,24 @@ export const getMinions = handler(async () => {
       ":userid": "123",
     },
   };
-
   const result = await dynamoDb.query(params);
   return result.Items;
 });
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.umbler.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: USER,
+    pass: PASS,
+  },
+});
+
+const mailOptions = {
+  from: USER,
+  to: USER,
+  subject: "E-mail enviado usando Node!",
+  text: "Olha o seu e-mail com node ;)",
+  html: "<h1>Título</h1><p>Texto!</p>",
+};
